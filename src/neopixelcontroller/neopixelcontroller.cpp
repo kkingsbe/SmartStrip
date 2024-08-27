@@ -89,10 +89,7 @@ void NeopixelController::tick() {
             break;
     }
     
-    cli();
-    ESP.wdtFeed();
     strip.show();
-    sei();
 }
 
 void NeopixelController::white(Adafruit_NeoPixel* strip) {

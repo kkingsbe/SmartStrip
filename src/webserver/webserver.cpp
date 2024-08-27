@@ -2,7 +2,8 @@
 
 WebServer::WebServer(String _mdnsName): 
 server(80), 
-mdnsName(_mdnsName) 
+mdnsName(_mdnsName),
+lastMDNSUpdate(millis())
 {}
 
 void WebServer::init() {
@@ -29,10 +30,13 @@ void WebServer::init() {
 }
 
 void WebServer::tick() {
-    // Call MDNS.update() to make sure queries are processed
-    MDNS.update();
+    // Update mDNS every MDNS_UPDATE_INTERVAL milliseconds
+    if(millis() - lastMDNSUpdate > MDNS_UPDATE_INTERVAL) {
+        lastMDNSUpdate = millis();
 
-    yield();
+        // Call MDNS.update() to make sure queries are processed
+        MDNS.update();
+    }
 
     WiFiClient client = server.available(); // Check for incoming clients
 
@@ -40,12 +44,8 @@ void WebServer::tick() {
         return; // Early exit if no client is connected
     }
 
-    yield();
-
     Serial.println("New Client.");
     while (client.connected()) {
-        yield();
-
         if (client.available()) {
             char c = client.read();
             //Serial.write(c);
@@ -59,7 +59,6 @@ void WebServer::tick() {
         }
     }
 
-    yield();
     cleanupClient(client);
 }
 
