@@ -1,10 +1,9 @@
 #include "smartstrip.h"
-#include "webserver/webserver.cpp"
-#include "neopixelcontroller/neopixelcontroller.cpp"
 
-SmartStrip::SmartStrip(String mdnsName, int neopixelPin, int ledCount) : 
+SmartStrip::SmartStrip(String mdnsName, int neopixelPin, int ledCount): 
 webServer(mdnsName), 
-neopixelController(neopixelPin, ledCount) { }
+neopixelController(neopixelPin, ledCount) 
+{ }
 
 void SmartStrip::init() {
     webServer.init();
