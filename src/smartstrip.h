@@ -1,5 +1,5 @@
-#include "../webserver/webserver.h"
-#include "../neopixelcontroller/neopixelcontroller.h"
+#include "webserver/webserver.h"
+#include "neopixelcontroller/neopixelcontroller.h"
 
 #ifndef SMARTSTRIP_H
 #define SMARTSTRIP_H
