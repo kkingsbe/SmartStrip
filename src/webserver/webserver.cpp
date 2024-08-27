@@ -35,7 +35,7 @@ void WebServer::tick() {
         lastMDNSUpdate = millis();
 
         // Call MDNS.update() to make sure queries are processed
-        MDNS.update();
+        //MDNS.update(); //Temporarily remove mdns update to see if it fixes the issue
     }
 
     WiFiClient client = server.available(); // Check for incoming clients

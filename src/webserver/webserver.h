@@ -9,7 +9,7 @@
 #define SSID     "Fios-DMGk8"
 #define PASSWORD "fit56jolly676gum"
 
-#define MDNS_UPDATE_INTERVAL 1000 // Update mDNS every 1000ms
+#define MDNS_UPDATE_INTERVAL 1000 // Update mDNS every 10s
 
 class WebServer {
 public:
