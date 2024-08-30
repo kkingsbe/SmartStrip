@@ -3,7 +3,8 @@
 WebServer::WebServer(String _mdnsName): 
 server(80), 
 mdnsName(_mdnsName),
-lastMDNSUpdate(millis())
+lastMDNSUpdate(millis()),
+lastConnectionHandling(millis())
 {}
 
 void WebServer::init() {

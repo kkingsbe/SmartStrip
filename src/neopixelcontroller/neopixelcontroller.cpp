@@ -4,6 +4,7 @@ NeopixelController::NeopixelController(int _pin, int _pixels) :
                                            pin(_pin),
                                            pixels(_pixels),
                                            status(WHITE),
+                                           prev_status(WHITE),
                                            brightness(0),
                                            rgbfade_speed(10),
                                            strip(_pixels, _pin, NEO_GRBW + NEO_KHZ800)
@@ -89,7 +90,19 @@ void NeopixelController::tick() {
             break;
     }
     
-    strip.show();
+    this->send_update();
+}
+
+void NeopixelController::send_update() {
+    if (status != prev_status || brightness != prev_brightness || h != prev_h || s != prev_s || v != prev_v) {
+        prev_status = status;
+        prev_brightness = brightness;
+        prev_h = h;
+        prev_s = s;
+        prev_v = v;
+
+        strip.show();
+    }
 }
 
 void NeopixelController::white(Adafruit_NeoPixel* strip) {
