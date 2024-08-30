@@ -1,13 +1,28 @@
 #include "smartstrip.h"
 
-SmartStrip::SmartStrip(String mdnsName, int neopixelPin, int ledCount): 
-webServer(mdnsName), 
-neopixelController(neopixelPin, ledCount) 
-{ }
+SmartStrip::SmartStrip(String mdnsName, int _speed, int _numStrips, LedStripConfig* stripConfig) : 
+    webServer(mdnsName),
+    speed(_speed),
+    numStrips(_numStrips)
+{
+    Serial.println("SmartStrip: Initializing...");
+    
+    // Allocate memory for the array of NeopixelControllers
+    neopixelControllers = new NeopixelController*[numStrips];
+    
+    for(int i = 0; i < numStrips; i++) {
+        Serial.println("SmartStrip: Initializing strip " + String(i));
+        // Initialize each NeopixelController
+        neopixelControllers[i] = new NeopixelController(stripConfig[i].pin, stripConfig[i].ledCount);
+    }
+}
 
 void SmartStrip::init() {
     webServer.init();
-    neopixelController.init();
+
+    for(int i = 0; i < numStrips; i++) {
+        neopixelControllers[i]->init();
+    }
 
     // Register API Routes using lambda functions to capture 'this'
     webServer.registerRoute(new RouteHandler(HTTPMethod::POST, "/power/on", [this](String url, WiFiClient& client) {
@@ -30,21 +45,29 @@ void SmartStrip::init() {
     }));
 }
 
-
 void SmartStrip::tick() {
     webServer.tick();
-    neopixelController.tick();
-}
 
+    for(int i = 0; i < numStrips; i++) {
+        neopixelControllers[i]->tick();
+    }
+
+    delay(speed);
+}
 
 void SmartStrip::powerOff(String url, WiFiClient& client) {
     Serial.println("Powering off shelf.");
-    neopixelController.turn_off();
+
+    for(int i = 0; i < numStrips; i++) {
+        neopixelControllers[i]->turn_off();
+    }
 }
 
 void SmartStrip::powerOn(String url, WiFiClient& client) {
     Serial.println("Powering on shelf.");
-    neopixelController.turn_on();
+    for(int i = 0; i < numStrips; i++) {
+        neopixelControllers[i]->turn_on();
+    }
 }
 
 void SmartStrip::colorHsv(String url, WiFiClient& client) {
@@ -59,7 +82,9 @@ void SmartStrip::colorHsv(String url, WiFiClient& client) {
     s = url.substring(url.indexOf("s=") + 2, url.indexOf("&v=")).toInt();
     v = url.substring(url.indexOf("v=") + 2).toInt();
 
-    neopixelController.set_color(h, s, v);
+    for(int i = 0; i < numStrips; i++) {
+        neopixelControllers[i]->set_color(h, s, v);
+    }
 }
 
 void SmartStrip::setBrightness(String url, WiFiClient& client) {
@@ -67,19 +92,27 @@ void SmartStrip::setBrightness(String url, WiFiClient& client) {
     Serial.println(url);
 
     int brightness = url.substring(url.indexOf("brightness=") + 11).toInt();
-    neopixelController.set_brightness(brightness);
+    for(int i = 0; i < numStrips; i++) {
+        neopixelControllers[i]->set_brightness(brightness);
+    }
 }
 
 void SmartStrip::setMode(String url, WiFiClient& client) {
     if(url.indexOf("/white") >= 0) {
         Serial.println("Setting shelf mode to white.");
-        neopixelController.set_mode(LedStatus::WHITE);
+        for(int i = 0; i < numStrips; i++) {
+            neopixelControllers[i]->set_mode(LedStatus::WHITE);
+        }
     } else if(url.indexOf("/color") >= 0) {
         Serial.println("Setting shelf mode to color.");
-        neopixelController.set_mode(LedStatus::COLOR);
+        for(int i = 0; i < numStrips; i++) {
+            neopixelControllers[i]->set_mode(LedStatus::COLOR);
+        }
     } else if(url.indexOf("/rgb-fade") >= 0) {
         Serial.println("Setting mode to rgb fade.");
-        neopixelController.set_mode(LedStatus::RGB_FADE);
+        for(int i = 0; i < numStrips; i++) {
+            neopixelControllers[i]->set_mode(LedStatus::RGB_FADE);
+        }
     }
 }
 
@@ -91,5 +124,7 @@ void SmartStrip::setFadeSpeed(String url, WiFiClient& client) {
 
     sscanf(url.c_str(), "POST /fade-speed?speed=%d", &speed);
 
-    neopixelController.set_fade_speed(speed);
+    for(int i = 0; i < numStrips; i++) {
+        neopixelControllers[i]->set_fade_speed(speed);
+    }
 }
