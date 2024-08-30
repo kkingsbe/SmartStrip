@@ -9,7 +9,8 @@
 #define SSID     "Fios-DMGk8"
 #define PASSWORD "fit56jolly676gum"
 
-#define MDNS_UPDATE_INTERVAL 1000 // Update mDNS every 10s
+#define MDNS_UPDATE_INTERVAL 1000 // Update mDNS every 1s
+#define HANDLE_CONNECTIONS_INTERVAL 1000 // Handle connections every 1s
 
 class WebServer {
 public:
@@ -27,6 +28,7 @@ private:
     String header;
     String currentLine;
     long lastMDNSUpdate;
+    long lastConnectionHandling;
     RouteHandler* routes[10]; // Max of 10 routes
 };
 

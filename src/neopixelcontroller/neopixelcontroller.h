@@ -32,16 +32,22 @@ public:
     void set_mode(LedStatus);
     void rgb_fade();
     void set_fade_speed(int);
+    void send_update(); // Executes strip.show() if necessary
     LedStatus get_status();
 private:
     Adafruit_NeoPixel strip;
     LedStatus status;
+    LedStatus prev_status;
     int pin;
     int pixels;
     int brightness;
+    int prev_brightness;
     uint16_t h;
+    uint16_t prev_h;
     uint8_t s;
+    uint8_t prev_s;
     uint8_t v;
+    uint8_t prev_v;
     uint16_t target_h;
     uint8_t target_s;
     uint8_t target_v;
